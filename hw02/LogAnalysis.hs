@@ -28,3 +28,9 @@ parse = map parseMessage . lines
 
 insert :: LogMessage -> MessageTree -> MessageTree
 insert (Unknown _) tree = tree
+insert log@(LogMessage _ time _) tree =
+  case tree of
+  (Leaf) -> Node Leaf log Leaf
+  node@(Node l (LogMessage _ val _) r) -> if time > val
+                                          then insert log r
+                                          else insert log l
