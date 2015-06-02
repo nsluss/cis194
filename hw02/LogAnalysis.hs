@@ -31,10 +31,16 @@ insert (Unknown _) tree = tree
 insert myLog@(LogMessage _ time _) tree =
   case tree of
   (Leaf) -> Node Leaf myLog Leaf
-  (Node l (LogMessage _ val _) r) -> if time > val
-                                     then insert myLog r
-                                     else insert myLog l
+  (Node l nodeV@(LogMessage _ val _) r) -> if time > val
+                                     then (Node l nodeV (insert myLog r))
+                                     else (Node (insert myLog l) nodeV r)
 
+
+--intentionally avoiding folds for now
 build :: [LogMessage] -> MessageTree
 build [] = Leaf
 build (x:xs) = insert x $ build xs
+
+inOrder :: MessageTree -> [LogMessage]
+inOrder Leaf = []
+inOrder (Node l val r) = inOrder l ++ [val] ++ inOrder r
