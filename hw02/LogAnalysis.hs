@@ -44,3 +44,9 @@ build (x:xs) = insert x $ build xs
 inOrder :: MessageTree -> [LogMessage]
 inOrder Leaf = []
 inOrder (Node l val r) = inOrder l ++ [val] ++ inOrder r
+
+whatWentWrong :: [LogMessage] -> [String]
+whatWentWrong = map toMessage . inOrder . build . filter priorityError
+  where priorityError (LogMessage (Error priority) _ _) = priority >= 50
+        priorityError _ = False
+        toMessage (LogMessage _ _ text) = text
